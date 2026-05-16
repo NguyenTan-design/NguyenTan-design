@@ -1,0 +1,203 @@
+<body>
+
+<h1>PDF Dashboard</h1>
+
+<div class="search-box">
+
+    <input
+        type="text"
+        id="searchTitle"
+        placeholder="Search Title..."
+    >
+
+    <input
+        type="text"
+        id="searchCategory"
+        placeholder="Search Category..."
+    >
+
+    <input
+        type="text"
+        id="searchType"
+        placeholder="Search Type..."
+    >
+
+</div>
+
+<br>
+
+<table id="pdfTable">
+
+    <thead>
+        <tr>
+            <th>TITLE</th>
+            <th>CATEGORY</th>
+            <th>TYPE</th>
+            <th>RELEASE DATE</th>
+            <th>ACTION</th>
+        </tr>
+    </thead>
+
+    <tbody id="pdfBody"></tbody>
+
+</table>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#f4f4f4;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+.search-box{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.search-box input{
+    flex:1;
+    min-width:220px;
+    padding:12px;
+    font-size:16px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+}
+
+th{
+    background:#0078d4;
+    color:white;
+    padding:12px;
+    text-align:left;
+}
+
+td{
+    padding:12px;
+    border-bottom:1px solid #ddd;
+}
+
+tr:hover{
+    background:#f1f1f1;
+}
+
+button{
+    background:#0078d4;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#005ea2;
+}
+
+</style>
+
+<script>
+
+let allData = [];
+
+fetch('data.json')
+.then(response => response.json())
+.then(data => {
+
+    allData = data;
+
+    renderTable(data);
+
+});
+
+function renderTable(data){
+
+    const body = document.getElementById('pdfBody');
+
+    body.innerHTML = '';
+
+    data.forEach(item => {
+
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${item["Title"]}</td>
+            <td>${item["Category"]}</td>
+            <td>${item["TYPE"]}</td>
+            <td>${item["Release date"]}</td>
+
+            <td>
+                <button onclick="openPDF('${item["LINK"]}')">
+                    Open
+                </button>
+            </td>
+        `;
+
+        body.appendChild(row);
+
+    });
+
+}
+
+document.getElementById('searchTitle')
+.addEventListener('keyup', filterData);
+
+document.getElementById('searchCategory')
+.addEventListener('keyup', filterData);
+
+document.getElementById('searchType')
+.addEventListener('keyup', filterData);
+
+function filterData(){
+
+    const titleKeyword =
+        document.getElementById('searchTitle')
+        .value
+        .toLowerCase();
+
+    const categoryKeyword =
+        document.getElementById('searchCategory')
+        .value
+        .toLowerCase();
+
+    const typeKeyword =
+        document.getElementById('searchType')
+        .value
+        .toLowerCase();
+
+    const filtered = allData.filter(item =>
+
+        item["Title"].toLowerCase().includes(titleKeyword)
+
+        &&
+
+        item["Category"].toLowerCase().includes(categoryKeyword)
+
+        &&
+
+        item["TYPE"].toLowerCase().includes(typeKeyword)
+
+    );
+
+    renderTable(filtered);
+
+}
+
+function openPDF(link){
+    window.location.href = link;
+}
+
+</script>
+
+</body>
